@@ -1,2 +1,8 @@
-*__pycache__/*
-*.csv
+*
+
+!build.py
+!eval.py
+!source
+!source/*
+!binaries
+!binaries/fib_lz
