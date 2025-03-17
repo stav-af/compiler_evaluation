@@ -2,7 +2,10 @@
 
 !build.py
 !eval.py
-!source
-!source/*
-!binaries
-!binaries/fib_lz
+!src
+!src/fib_naive
+!src/fib_tailrec
+!src/fib_naive/*
+!src/fib_tailrec/*
+!bin
+!bin/fib_lz
