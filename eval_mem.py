@@ -2,9 +2,13 @@ import sys
 import os
 import subprocess
 import time
+import re
 
 # any binary having ran over 5 seconds is considered to have diverged
 MAX_RUNTIME = 5
+
+
+WSS_PATTERN = r"Maximum resident set size \(kbytes\):\s*(\d+)"
 
 def stringify_row(row, delim=","):
     return delim.join(row)
@@ -17,7 +21,6 @@ def test(binaries, max):
     data = [["n", *[os.path.basename(binary) for binary in binaries]]]
     print(stringify_row(data[0]))
     for arg in range(1, max):
-        prev_result = None
         row = [str(arg)]
         for (i, binary) in enumerate(binaries):
             if too_long[i]:
@@ -27,22 +30,22 @@ def test(binaries, max):
             start_time = time.perf_counter()
 
             try:
-                result = float(subprocess.run(
-                    ["nice", "-n", "-20", binary, str(arg)], 
-                    capture_output=True, text=True).stdout.strip())
+
+                stats = subprocess.run(
+                    ["/usr/bin/time", "-v",binary, str(arg)], 
+                    capture_output=True, text=True).stderr.strip()
+                
+                result = re.search(WSS_PATTERN, stats)
+                set_size = float(result.group(1))
             except:
-                raise ValueError(f"The binary {binary} failed")
+                raise ValueError(f"The binary {binary} failed \n{stats}")
 
 
             runtime =  time.perf_counter() - start_time 
             if runtime > MAX_RUNTIME:
                 too_long[i] = True            
 
-            if prev_result is not None and result != prev_result:
-                raise ValueError(f"The binary {binary} failed returned {result} when others returned {prev_result}")
-
-            prev_result = result
-            row.append(str(runtime))
+            row.append(str(set_size))
         
         print(stringify_row(row))
         data.append(row)

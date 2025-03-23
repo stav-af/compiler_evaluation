@@ -5,7 +5,12 @@
 !src
 !src/fib_naive
 !src/fib_tailrec
-!src/fib_naive/*
-!src/fib_tailrec/*
-!bin
-!bin/fib_lz
+!src/knapsack_dp
+!src/knapsack_naive
+!src/catalan_naive
+!src/catalan_dp
+!*.py
+!*.hs
+!*.ml
+!*.py
+!*.rkt
